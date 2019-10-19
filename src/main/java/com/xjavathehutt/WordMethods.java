@@ -1,3 +1,5 @@
+package com.xjavathehutt;
+
 import java.util.regex.Pattern;
 
 public final class WordMethods {

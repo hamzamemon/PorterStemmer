@@ -1,5 +1,3 @@
-package test;
-
 import com.xjavathehutt.PorterStemmer;
 import org.junit.Test;
 

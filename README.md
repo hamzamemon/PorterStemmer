@@ -1,2 +1,2 @@
-# PorterStemmer
-Implementation of the PorterStemmer algorithm
+# com.xjavathehutt.PorterStemmer
+Implementation of the com.xjavathehutt.PorterStemmer algorithm

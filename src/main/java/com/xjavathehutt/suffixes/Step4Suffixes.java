@@ -1,4 +1,4 @@
-package suffixes;
+package com.xjavathehutt.suffixes;
 
 public enum Step4Suffixes {
     

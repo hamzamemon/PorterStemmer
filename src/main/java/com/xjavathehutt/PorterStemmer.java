@@ -1,6 +1,8 @@
-import suffixes.Step2Suffixes;
-import suffixes.Step3Suffixes;
-import suffixes.Step4Suffixes;
+package com.xjavathehutt;
+
+import com.xjavathehutt.suffixes.Step2Suffixes;
+import com.xjavathehutt.suffixes.Step3Suffixes;
+import com.xjavathehutt.suffixes.Step4Suffixes;
 
 import java.util.Arrays;
 import java.util.HashMap;
