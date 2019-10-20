@@ -1,5 +1,8 @@
-package com.xjavathehutt.suffixes;
+package com.xjavathehutt.porterstemmer.suffixes;
 
+/**
+ * Class to convert a suffix to Porter Stemmed suffix
+ */
 public enum Step4Suffixes {
     
     // 5 letters
@@ -33,10 +36,20 @@ public enum Step4Suffixes {
         this.suffix = suffix;
     }
     
+    /**
+     * Gets the suffix
+     *
+     * @return the suffix
+     */
     public String getSuffix() {
         return suffix;
     }
     
+    /**
+     * Output object as String
+     *
+     * @return the object as a String
+     */
     @Override
     public String toString() {
         return name().toLowerCase();

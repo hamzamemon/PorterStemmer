@@ -1,25 +1,35 @@
-package com.xjavathehutt;
+package com.xjavathehutt.porterstemmer;
 
-import com.xjavathehutt.suffixes.Step2Suffixes;
-import com.xjavathehutt.suffixes.Step3Suffixes;
-import com.xjavathehutt.suffixes.Step4Suffixes;
+import com.xjavathehutt.porterstemmer.suffixes.Step2Suffixes;
+import com.xjavathehutt.porterstemmer.suffixes.Step3Suffixes;
+import com.xjavathehutt.porterstemmer.suffixes.Step4Suffixes;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This class does the Porter Stemmer algorithm (http://snowball.tartarus.org/algorithms/english/stemmer.html)
+ */
 public final class PorterStemmer {
     
-    private static final HashSet<String> EXCEPTIONAL_FORMS_AFTER_STEP_1A = new HashSet<>(8);
+    private static final Step2Suffixes[] STEP_2_SUFFIXES = Step2Suffixes.values();
+    private static final Step3Suffixes[] STEP_3_SUFFIXES = Step3Suffixes.values();
+    private static final Step4Suffixes[] STEP_4_SUFFIXES = Step4Suffixes.values();
+    private static final String[] STEP_1B_SUFFIXES = {"ed", "edly", "ing", "ingly"};
+    private static final Set<String> EXCEPTIONAL_FORMS_AFTER_STEP_1A = new HashSet<>(8);
     private static final Pattern VOWEL_NOT_IMMEDIATELY_BEFORE_S = Pattern.compile("^.*[aeiouy].+s$");
-    private static HashMap<String, String> stems = new HashMap<>();
-    private static HashMap<String, String> exceptionalForms = new HashMap<>(19);
+    private static Map<String, String> stems = new HashMap<>();
+    private static Map<String, String> exceptionalForms = new HashMap<>(19);
+    private static Map<String, String> stringToLetterTypes = new HashMap<>();
     
-    private PorterStemmer() {
-    }
-    
+    /**
+     * Exceptions to the algorithm
+     */
     public static void createMap() {
         String[] keys = {"skis", "skies", "dying", "lying", "tying", "idly", "gently", "ugly", "early", "only",
                 "singly", "sky", "news", "howe", "atlas", "cosmos", "bias", "andes", "communing"};
@@ -34,6 +44,13 @@ public final class PorterStemmer {
         EXCEPTIONAL_FORMS_AFTER_STEP_1A.addAll(Arrays.asList(EXCEPTIONAL_FORMS_AFTER_STEP_1A_ARRAY));
     }
     
+    /**
+     * R1 is the substring after the first consonant following a vowel
+     *
+     * @param term the word
+     *
+     * @return the index
+     */
     private static int getStartIndexOfR1(StringBuilder term) {
         String termS = term.toString();
         
@@ -44,53 +61,76 @@ public final class PorterStemmer {
             return 6;
         }
         
-        int i = 0;
-        while(i < termS.length() && "aeiouy".indexOf(termS.charAt(i)) < 0) {
-            i++;
-        }
-        while(i < termS.length() && "aeiouy".indexOf(termS.charAt(i)) >= 0) {
-            i++;
-        }
-        
-        return i;
+        return getIndexOfVowelAfterConsonant(term, 0);
     }
     
+    /**
+     * R2 is the substring after the first consonant following a vowel in R1
+     *
+     * @param term the word
+     *
+     * @return the index
+     */
     private static int getStartIndexOfR2(StringBuilder term, int r1) {
+        return getIndexOfVowelAfterConsonant(term, r1);
+    }
+    
+    /**
+     * Gets index of vowel after consonant
+     *
+     * @param term  the term
+     * @param start the starting position (i)
+     *
+     * @return the index
+     */
+    private static int getIndexOfVowelAfterConsonant(StringBuilder term, int start) {
         String termS = term.toString();
-        
-        int i = r1;
-        while(i < termS.length() && "aeiouy".indexOf(termS.charAt(i)) < 0) {
+        int i = start;
+        int length = term.length();
+        while(i < length && "aeiouy".indexOf(termS.charAt(i)) < 0) {
             i++;
         }
-        while(i < termS.length() && "aeiouy".indexOf(termS.charAt(i)) >= 0) {
+        while(i < length && "aeiouy".indexOf(termS.charAt(i)) >= 0) {
             i++;
         }
         
         return i;
     }
     
+    /**
+     * Performs the algorithm steps
+     *
+     * @param termS the word
+     *
+     * @return the stemmed word
+     */
     private static String makeStem(String termS) {
-        StringBuilder term = new StringBuilder(termS);
-        if(term.charAt(0) == '\'') {
-            term = term.deleteCharAt(0);
+        if(termS.charAt(0) == '\'') {
+            termS = termS.substring(1);
         }
-        String termToString = term.toString();
-        if(exceptionalForms.containsKey(termToString)) {
-            return exceptionalForms.get(termToString);
+        if(exceptionalForms.containsKey(termS)) {
+            return exceptionalForms.get(termS);
         }
         
+        StringBuilder term = new StringBuilder(termS);
         WordMethods.setCapitalYs(term);
         int r1 = getStartIndexOfR1(term);
         int r2 = getStartIndexOfR2(term, r1);
         doStep0(term);
+        if(term.toString().isEmpty()) {
+            return "";
+        }
+        
         doStep1a(term);
         
-        termToString = term.toString();
+        String termToString = term.toString();
+        
         if(EXCEPTIONAL_FORMS_AFTER_STEP_1A.contains(termToString)) {
             return termToString;
         }
         
         doStep1bc(term, r1);
+        doStep1c(term);
         doStep2To4(term, r1, r2);
         doStep5(term, r1, r2);
         
@@ -98,6 +138,13 @@ public final class PorterStemmer {
         return termToString.replace("Y", "y");
     }
     
+    /**
+     * Does the stemming helper method, determines if the word has been stemmed before
+     *
+     * @param termS the word
+     *
+     * @return the stemmed word
+     */
     public static String stem(String termS) {
         if(termS.length() <= 2) {
             return termS;
@@ -116,33 +163,43 @@ public final class PorterStemmer {
         return stem;
     }
     
+    /**
+     * Handles suffixes of "'", "'s" and "'s'"
+     *
+     * @param term the word
+     */
     private static void doStep0(StringBuilder term) {
         String termS = term.toString();
         
         if(termS.endsWith("'s'")) {
-            term = term.delete(term.length() - 3, term.length());
+            term.delete(term.length() - 3, term.length());
         }
         else if(termS.endsWith("'s")) {
-            term = term.delete(term.length() - 2, term.length());
+            term.delete(term.length() - 2, term.length());
         }
         else if(termS.charAt(termS.length() - 1) == '\'') {
-            term = term.deleteCharAt(term.length() - 1);
+            term.deleteCharAt(term.length() - 1);
         }
     }
     
+    /**
+     * Handles "s" suffixes
+     *
+     * @param term the word
+     */
     private static void doStep1a(StringBuilder term) {
         String termS = term.toString();
         
         if(termS.endsWith("sses")) {
             // *sses -> *ss
-            term = term.delete(term.length() - 2, term.length());
+            term.delete(term.length() - 2, term.length());
         }
         else if(termS.endsWith("ies") || termS.endsWith("ied")) {
             if(termS.length() >= 5) {
-                term = term.delete(term.length() - 2, term.length());
+                term.delete(term.length() - 2, term.length());
             }
             else {
-                term = term.deleteCharAt(term.length() - 1);
+                term.deleteCharAt(term.length() - 1);
             }
         }
         else if(termS.endsWith("ss") || termS.endsWith("us")) {
@@ -152,35 +209,38 @@ public final class PorterStemmer {
             // *s -> *
             Matcher matcher = VOWEL_NOT_IMMEDIATELY_BEFORE_S.matcher(termS);
             if(matcher.find()) {
-                term = term.deleteCharAt(term.length() - 1);
+                term.deleteCharAt(term.length() - 1);
             }
         }
     }
     
+    /**
+     * Handles suffixes of "ed" and "ing"
+     *
+     * @param term the word
+     * @param r1   the R1 region
+     */
     private static void doStep1bc(StringBuilder term, int r1) {
         String termS = term.toString();
         int length = term.length();
         
         if(termS.endsWith("eedly")) {
             if(term.length() - 5 >= r1) {
-                term = term.delete(length - 3, length);
+                term.delete(length - 3, length);
             }
         }
-        
         else if(termS.endsWith("eed")) {
             if(term.length() - 3 >= r1) {
-                term = term.deleteCharAt(length - 1);
+                term.deleteCharAt(length - 1);
             }
         }
-        
         else {
-            String[] suffixes = {"ed", "edly", "ing", "ingly"};
-            for(String suffix : suffixes) {
+            for(String suffix : STEP_1B_SUFFIXES) {
                 if(termS.endsWith(suffix)) {
                     String prefix = termS.substring(0, termS.length() - suffix.length());
                     if(getLetterTypes(prefix).contains("V")) {
-                        term = term.delete(termS.length() - suffix.length(), term.length());
-                        term = step1BPart2(term);
+                        term.delete(termS.length() - suffix.length(), term.length());
+                        step1BPart2(term);
                         break;
                     }
                 }
@@ -189,33 +249,54 @@ public final class PorterStemmer {
         
         if(term.charAt(term.length() - 1) == 'y' || term.charAt(term.length() - 1) == 'Y') {
             if(term.length() >= 3 && "aeiouy".indexOf(term.charAt(term.length() - 2)) < 0) {
-                term = term.replace(term.length() - 1, term.length(), "i");
+                term.replace(term.length() - 1, term.length(), "i");
             }
         }
     }
     
-    private static StringBuilder step1BPart2(StringBuilder term) {
+    /**
+     * Handles second part of Step 1b
+     *
+     * @param term the word
+     */
+    private static void step1BPart2(StringBuilder term) {
         String termS = term.toString();
         
         if(termS.endsWith("at") || termS.endsWith("bl") || termS.endsWith("iz")) {
-            term = term.append('e');
+            term.append('e');
         }
-        else if(WordMethods.endsWithDouble(term)) {
-            term = term.deleteCharAt(term.length() - 1);
+        else if(WordMethods.endsWithDouble(termS)) {
+            term.deleteCharAt(term.length() - 1);
         }
         else if(isShort(termS)) {
-            term = term.append('e');
+            term.append('e');
         }
-        
-        return term;
     }
     
+    /**
+     * Replaces "y" with "i" if necessary
+     *
+     * @param term the word
+     */
+    private static void doStep1c(StringBuilder term) {
+        if(term.charAt(term.length() - 1) == 'y' || term.charAt(term.length() - 1) == 'Y') {
+            if(term.length() >= 3 && "aeiouy".indexOf(term.charAt(term.length() - 2)) < 0) {
+                term.replace(term.length() - 1, term.length(), "i");
+            }
+        }
+    }
+    
+    /**
+     * Replaces suffixes with stemmed suffix using enums
+     *
+     * @param term the word
+     * @param r1   the R1 region
+     * @param r2   the R2 region
+     */
     private static void doStep2To4(StringBuilder term, int r1, int r2) {
         // Step 2
-        Step2Suffixes[] step2Suffixes = Step2Suffixes.values();
-        
         String termS = term.toString();
-        for(Step2Suffixes step2Suffix : step2Suffixes) {
+        for(Step2Suffixes step2Suffix : STEP_2_SUFFIXES) {
             String suffix = step2Suffix.toString();
             if(termS.endsWith(suffix)) {
                 if(termS.length() - suffix.length() >= r1) {
@@ -242,16 +323,14 @@ public final class PorterStemmer {
         }
         
         // Step 3
-        Step3Suffixes[] step3Suffixes = Step3Suffixes.values();
-        
         termS = term.toString();
         if(termS.endsWith("ative")) {
             if(termS.length() - 5 >= r2) {
-                term = term.replace(term.length() - 5, term.length(), "");
+                term.replace(term.length() - 5, term.length(), "");
                 termS = term.toString();
             }
         }
-        for(Step3Suffixes step3Suffix : step3Suffixes) {
+        for(Step3Suffixes step3Suffix : STEP_3_SUFFIXES) {
             String suffix = step3Suffix.toString();
             if(termS.endsWith(suffix)) {
                 if(termS.length() - suffix.length() >= r1) {
@@ -262,23 +341,22 @@ public final class PorterStemmer {
         }
         
         // Step 4
-        Step4Suffixes[] step4Suffixes = Step4Suffixes.values();
         termS = term.toString();
         
         if(termS.endsWith("sion") || termS.endsWith("tion")) {
             if(termS.length() - 3 >= r2) {
-                term = term.delete(term.length() - 3, term.length());
+                term.delete(term.length() - 3, term.length());
             }
         }
         
         else {
-            for(Step4Suffixes step4Suffix : step4Suffixes) {
+            for(Step4Suffixes step4Suffix : STEP_4_SUFFIXES) {
                 String suffix = step4Suffix.toString();
                 if(termS.endsWith(suffix)) {
                     if(termS.length() - suffix.length() >= r2) {
                         String prefix = termS.substring(0, termS.length() - suffix.length());
                         if(getMeasure(prefix) > 1) {
-                            term = term.replace(prefix.length(), term.length(), step4Suffix.getSuffix());
+                            term.replace(prefix.length(), term.length(), step4Suffix.getSuffix());
                         }
                     }
                     break;
@@ -287,31 +365,74 @@ public final class PorterStemmer {
         }
     }
     
+    /**
+     * Remove suffix for Steps 2-4
+     *
+     * @param term        the word
+     * @param suffix      the suffix to remove
+     * @param replacement what to replace the suffix with
+     */
+    private static void removeSuffix(StringBuilder term, String suffix, String replacement) {
+        String prefix = term.substring(0, term.length() - suffix.length());
+        if(getMeasure(prefix) > 0) {
+            int lastIndex = prefix.length();
+            term.replace(lastIndex, term.length(), replacement);
+        }
+    }
+    
+    /**
+     * Remove ending "e" and "l" if necessary
+     *
+     * @param term the word
+     * @param r1   the R1 region
+     * @param r2   the R2 region
+     */
     private static void doStep5(StringBuilder term, int r1, int r2) {
         String termS = term.toString();
         
         if(termS.charAt(termS.length() - 1) == 'e') {
             if(termS.length() - 1 >= r2) {
-                term = term.deleteCharAt(term.length() - 1);
+                term.deleteCharAt(term.length() - 1);
             }
             else {
                 String withoutE = termS.substring(0, termS.length() - 1);
                 if(termS.length() - 1 >= r1 && !endsWithShortSyllable(withoutE)) {
-                    term = term.deleteCharAt(term.length() - 1);
+                    term.deleteCharAt(term.length() - 1);
                 }
             }
         }
         
         else if(termS.endsWith("ll") && termS.length() - 1 >= r2) {
-            term = term.deleteCharAt(term.length() - 1);
+            term.deleteCharAt(term.length() - 1);
         }
     }
     
-    public static boolean isShort(String termS) {
+    /**
+     * Determines if a word is "short" - ends with short syllable and R1 is null
+     *
+     * @param termS the word
+     *
+     * @return if word is short or not
+     */
+    private static boolean isShort(String termS) {
         return endsWithShortSyllable(termS) && getMeasure(termS) == 1;
     }
     
-    public static boolean endsWithShortSyllable(String termS) {
+    /**
+     * Determines if word is a short syllable:
+     * Vowel followed by consonant (not "w", "x" or "Y" and preceded by consonant
+     * OR
+     * Vowel at the beginning of the word followed by consonant
+     *
+     * @param termS the word
+     *
+     * @return if word is a short syllable
+     */
+    private static boolean endsWithShortSyllable(String termS) {
+        if(termS.length() < 2) {
+            return false;
+        }
+        
         if(termS.length() == 2) {
             return "aeiouy".indexOf(termS.charAt(0)) >= 0 && "aeiouy".indexOf(termS.charAt(1)) < 0;
         }
@@ -325,17 +446,20 @@ public final class PorterStemmer {
         return !WordMethods.isVowel(thirdLast) && WordMethods.isVowel(secondLast) && !WordMethods.isVowel(last);
     }
     
-    private static void removeSuffix(StringBuilder term, String suffix, String replacement) {
-        String prefix = term.substring(0, term.length() - suffix.length());
-        if(getMeasure(prefix) > 0) {
-            int lastIndex = prefix.length();
-            term = term.replace(lastIndex, term.length(), replacement);
-        }
-    }
-    
+    /**
+     * Convert word to Vs and Cs (vowel and consonant)
+     *
+     * @param word the word
+     *
+     * @return the converted word
+     */
     private static String getLetterTypes(String word) {
+        if(stringToLetterTypes.containsKey(word)) {
+            return stringToLetterTypes.get(word);
+        }
+        
         StringBuilder letterTypes = new StringBuilder(word.length());
-        for(int i = 0; i < word.length(); i++) {
+        for(int i = 0, length = word.length(); i < length; i++) {
             char letter = word.charAt(i);
             char letterType = WordMethods.getLetterType(letter);
             if(letterTypes.length() == 0 || letterTypes.charAt(letterTypes.length() - 1) != letterType) {
@@ -343,16 +467,25 @@ public final class PorterStemmer {
             }
         }
         
-        return letterTypes.toString();
+        String letterTypesS = letterTypes.toString();
+        stringToLetterTypes.put(word, letterTypesS);
+        return letterTypesS;
     }
     
+    /**
+     * Number of CV pairs
+     *
+     * @param word the word
+     *
+     * @return number of pairs
+     */
     private static int getMeasure(String word) {
         String letterTypes = getLetterTypes(word);
         if(letterTypes.length() < 2) {
             return 0;
         }
         if(letterTypes.charAt(0) == 'C') {
-            return (letterTypes.length() - 1) >> 1;
+            return letterTypes.length() - 1 >> 1;
         }
         return letterTypes.length() >> 1;
     }
