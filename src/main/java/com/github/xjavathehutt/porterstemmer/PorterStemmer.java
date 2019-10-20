@@ -1,8 +1,8 @@
-package com.xjavathehutt.porterstemmer;
+package com.github.xjavathehutt.porterstemmer;
 
-import com.xjavathehutt.porterstemmer.suffixes.Step2Suffixes;
-import com.xjavathehutt.porterstemmer.suffixes.Step3Suffixes;
-import com.xjavathehutt.porterstemmer.suffixes.Step4Suffixes;
+import com.github.xjavathehutt.porterstemmer.suffixes.Step2Suffixes;
+import com.github.xjavathehutt.porterstemmer.suffixes.Step3Suffixes;
+import com.github.xjavathehutt.porterstemmer.suffixes.Step4Suffixes;
 
 import java.util.Arrays;
 import java.util.HashMap;

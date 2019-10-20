@@ -1,4 +1,4 @@
-package com.xjavathehutt.porterstemmer;
+package com.github.xjavathehutt.porterstemmer;
 
 import java.util.HashMap;
 import java.util.Map;

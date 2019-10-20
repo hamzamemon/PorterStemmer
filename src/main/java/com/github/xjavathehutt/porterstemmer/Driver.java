@@ -1,4 +1,4 @@
-package com.xjavathehutt.porterstemmer;
+package com.github.xjavathehutt.porterstemmer;
 
 import java.io.File;
 import java.io.FileNotFoundException;

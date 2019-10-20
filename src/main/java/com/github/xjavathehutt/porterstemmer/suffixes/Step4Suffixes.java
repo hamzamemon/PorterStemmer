@@ -1,31 +1,38 @@
-package com.xjavathehutt.porterstemmer.suffixes;
+package com.github.xjavathehutt.porterstemmer.suffixes;
 
 /**
  * Class to convert a suffix to Porter Stemmed suffix
  */
-public enum Step3Suffixes {
-    
-    // 7 letters
-    ATIONAL("ate"),
-    
-    // 6 letters
-    TIONAL("tion"),
+public enum Step4Suffixes {
     
     // 5 letters
-    ALIZE("al"),
-    ICATE("ic"),
-    ICITI("ic"),
+    EMENT(""),
     
     // 4 letters
-    ICAL("ic"),
-    NESS(""),
+    ANCE(""),
+    ENCE(""),
+    ABLE(""),
+    IBLE(""),
+    MENT(""),
     
     // 3 letters
-    FUL("");
+    ANT(""),
+    ENT(""),
+    ISM(""),
+    ATE(""),
+    ITI(""),
+    OUS(""),
+    IVE(""),
+    IZE(""),
+    
+    // 2 letters
+    AL(""),
+    ER(""),
+    IC("");
     
     final String suffix;
     
-    Step3Suffixes(String suffix) {
+    Step4Suffixes(String suffix) {
         this.suffix = suffix;
     }
     

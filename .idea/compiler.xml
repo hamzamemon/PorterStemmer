@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="PorterStemmer" target="13" />
+      <module name="PorterStemmer" target="12" />
     </bytecodeTargetLevel>
   </component>
 </project>

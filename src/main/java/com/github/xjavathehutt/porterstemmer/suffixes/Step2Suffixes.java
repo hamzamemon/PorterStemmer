@@ -1,4 +1,4 @@
-package com.xjavathehutt.porterstemmer.suffixes;
+package com.github.xjavathehutt.porterstemmer.suffixes;
 
 /**
  * Class to convert a suffix to Porter Stemmed suffix
