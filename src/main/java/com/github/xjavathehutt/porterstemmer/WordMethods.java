@@ -11,26 +11,21 @@ public final class WordMethods {
     
     private static final Pattern DOUBLES = Pattern.compile(".*(bb|dd|ff|gg|mm|nn|pp|rr|tt)$");
     private static Map<String, StringBuilder> mapCapitalYs = new HashMap<>();
+    protected static final String VOWELS = "aeiouy";
     
     /**
-     * Determines if a letter is a vowel or not, helper method
+     * Determines if a letter is a vowel or not
      *
      * @param letter the letter
      *
-     * @return Vowel or consonant
+     * @return vowel or consonant
      */
     public static char getLetterType(char letter) {
-        switch(letter) {
-            case 'a':
-            case 'e':
-            case 'i':
-            case 'o':
-            case 'u':
-            case 'y':
-                return 'V';
-            default:
-                return 'C';
+        if(VOWELS.indexOf(letter) >= 0) {
+            return 'V';
         }
+        
+        return 'C';
     }
     
     /**
@@ -81,5 +76,11 @@ public final class WordMethods {
         }
         
         mapCapitalYs.put(termS, term);
+    }
+    
+    /**
+     * Constructor for WordMethods
+     */
+    private WordMethods() {
     }
 }

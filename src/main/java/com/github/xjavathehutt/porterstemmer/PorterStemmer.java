@@ -24,13 +24,10 @@ public final class PorterStemmer {
     private static final Set<String> EXCEPTIONAL_FORMS_AFTER_STEP_1A = new HashSet<>(8);
     private static final Pattern VOWEL_NOT_IMMEDIATELY_BEFORE_S = Pattern.compile("^.*[aeiouy].+s$");
     private static Map<String, String> stems = new HashMap<>();
-    private static Map<String, String> exceptionalForms = new HashMap<>(19);
+    private static final Map<String, String> exceptionalForms = new HashMap<>(19);
     private static Map<String, String> stringToLetterTypes = new HashMap<>();
     
-    /**
-     * Exceptions to the algorithm
-     */
-    public static void createMap() {
+    static {
         String[] keys = {"skis", "skies", "dying", "lying", "tying", "idly", "gently", "ugly", "early", "only",
                 "singly", "sky", "news", "howe", "atlas", "cosmos", "bias", "andes", "communing"};
         String[] values = {"ski", "sky", "die", "lie", "tie", "idl", "gentl", "ugli", "earli", "onli", "singl",
@@ -87,10 +84,10 @@ public final class PorterStemmer {
         String termS = term.toString();
         int i = start;
         int length = term.length();
-        while(i < length && "aeiouy".indexOf(termS.charAt(i)) < 0) {
+        while(i < length && WordMethods.VOWELS.indexOf(termS.charAt(i)) < 0) {
             i++;
         }
-        while(i < length && "aeiouy".indexOf(termS.charAt(i)) >= 0) {
+        while(i < length && WordMethods.VOWELS.indexOf(termS.charAt(i)) >= 0) {
             i++;
         }
         
@@ -248,7 +245,7 @@ public final class PorterStemmer {
         }
         
         if(term.charAt(term.length() - 1) == 'y' || term.charAt(term.length() - 1) == 'Y') {
-            if(term.length() >= 3 && "aeiouy".indexOf(term.charAt(term.length() - 2)) < 0) {
+            if(term.length() >= 3 && WordMethods.VOWELS.indexOf(term.charAt(term.length() - 2)) < 0) {
                 term.replace(term.length() - 1, term.length(), "i");
             }
         }
@@ -280,7 +277,7 @@ public final class PorterStemmer {
      */
     private static void doStep1c(StringBuilder term) {
         if(term.charAt(term.length() - 1) == 'y' || term.charAt(term.length() - 1) == 'Y') {
-            if(term.length() >= 3 && "aeiouy".indexOf(term.charAt(term.length() - 2)) < 0) {
+            if(term.length() >= 3 && WordMethods.VOWELS.indexOf(term.charAt(term.length() - 2)) < 0) {
                 term.replace(term.length() - 1, term.length(), "i");
             }
         }
@@ -434,7 +431,7 @@ public final class PorterStemmer {
         }
         
         if(termS.length() == 2) {
-            return "aeiouy".indexOf(termS.charAt(0)) >= 0 && "aeiouy".indexOf(termS.charAt(1)) < 0;
+            return WordMethods.VOWELS.indexOf(termS.charAt(0)) >= 0 && WordMethods.VOWELS.indexOf(termS.charAt(1)) < 0;
         }
         char last = termS.charAt(termS.length() - 1);
         if(last == 'w' || last == 'x' || last == 'Y') {
@@ -488,5 +485,11 @@ public final class PorterStemmer {
             return letterTypes.length() - 1 >> 1;
         }
         return letterTypes.length() >> 1;
+    }
+    
+    /**
+     * Constructor for PorterStemmer
+     */
+    private PorterStemmer() {
     }
 }

@@ -1,20 +1,20 @@
 package com.github.xjavathehutt.porterstemmer;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
-public class Driver {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class PorterStemmerTest {
     
-    private static final Pattern COMPILE = Pattern.compile("[^a-zA-Z']|('s?'?)");
-    
-    public static void main(String[] args) {
+    @Test
+    void validateStems() {
         int count = 0;
         
         try(Scanner porter2Input = new Scanner(new File("porter2Input.txt"))) {
-            PorterStemmer.createMap();
-            
             while(porter2Input.hasNext()) {
                 String input = porter2Input.next();
                 String output = porter2Input.next();
@@ -30,10 +30,6 @@ public class Driver {
             e.printStackTrace();
         }
         
-        System.out.println(count + " errors in stemming.");
-    }
-    
-    private static String removePunctuationAndLowerCase(String term) {
-        return COMPILE.matcher(term.toLowerCase()).replaceAll("");
+        assertEquals(count, 0);
     }
 }
