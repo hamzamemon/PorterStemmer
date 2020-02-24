@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PorterStemmer.iml" filepath="$PROJECT_DIR$/PorterStemmer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/porterstemmer.iml" filepath="$PROJECT_DIR$/porterstemmer.iml" />
     </modules>
   </component>
 </project>
