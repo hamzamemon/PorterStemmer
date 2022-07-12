@@ -1,22 +1,22 @@
-package com.github.xjavathehutt.porterstemmer.suffixes;
+package com.github.hamzamemon.porterstemmer.suffixes;
 
 /**
  * Class to convert a suffix to Porter Stemmed suffix
  */
 public enum Step2Suffixes {
-    
+
     // 7 letters
     ATIONAL("ate"),
     IZATION("ize"),
     FULNESS("ful"),
     OUSNESS("ous"),
     IVENESS("ive"),
-    
+
     // 6 letters
     TIONAL("tion"),
     BILITI("ble"),
     LESSLI("less"),
-    
+
     // 5 letters
     ENTLI("ent"),
     ATION("ate"),
@@ -25,7 +25,7 @@ public enum Step2Suffixes {
     OUSLI("ous"),
     IVITI("ive"),
     FULLI("ful"),
-    
+
     // 4 letters
     ENCI("ence"),
     ANCI("ance"),
@@ -34,19 +34,19 @@ public enum Step2Suffixes {
     ATOR("ate"),
     ALLI("al"),
     OGI("og"),
-    
+
     // 3 letters
     BLI("ble"),
-    
+
     // 2 letters
     LI("");
-    
-    final String suffix;
-    
+
+    private final String suffix;
+
     Step2Suffixes(String suffix) {
         this.suffix = suffix;
     }
-    
+
     /**
      * Gets the suffix
      *
@@ -55,7 +55,7 @@ public enum Step2Suffixes {
     public String getSuffix() {
         return suffix;
     }
-    
+
     /**
      * Output object as String
      *

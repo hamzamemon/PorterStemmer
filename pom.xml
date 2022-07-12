@@ -3,14 +3,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.xjavathehutt</groupId>
+    <groupId>com.github.hamzamemon</groupId>
     <artifactId>porterstemmer</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -18,14 +18,14 @@
 
     <name>Porter Stemmer</name>
     <description>Implementation of the Porter Stemmer algorithm</description>
-    <url>https://github.com/xJavaTheHutt/PorterStemmer</url>
+    <url>https://github.com/hamzamemon/PorterStemmer</url>
 
     <developers>
         <developer>
             <name>Hamza Memon</name>
             <email>hmemon67@gmail.com</email>
-            <organization>com.github.xjavathehutt</organization>
-            <organizationUrl>https://github.com/xJavaTheHutt</organizationUrl>
+            <organization>com.github.hamzamemon</organization>
+            <organizationUrl>https://github.com/hamzamemon</organizationUrl>
         </developer>
     </developers>
 
@@ -37,14 +37,14 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/xJavaTheHutt/PorterStemmer.git</connection>
-        <developerConnection>scm:git:ssh://github.com:xJavaTheHutt/PorterStemmer.git</developerConnection>
-        <url>http://github.com/xJavaTheHutt/PorterStemmer/tree/master</url>
+        <connection>scm:git:git://github.com/hamzamemon/PorterStemmer.git</connection>
+        <developerConnection>scm:git:ssh://github.com:hamzamemon/PorterStemmer.git</developerConnection>
+        <url>http://github.com/hamzamemon/PorterStemmer/tree/master</url>
     </scm>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.17</maven.compiler.source>
+        <maven.compiler.target>1.17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
