@@ -12,7 +12,7 @@ generosity) are very similar so queries results will be handled accordingly.
 
 ```
 <dependency>
-  <groupId>com.github.hamzamemon</groupId>
+  <groupId>io.github.hamzamemon</groupId>
   <artifactId>porterstemmer</artifactId>
   <version>1.0.0</version>
 </dependency>
