@@ -14,7 +14,7 @@ generosity) are very similar so queries results will be handled accordingly.
 <dependency>
   <groupId>com.github.hamzamemon</groupId>
   <artifactId>porterstemmer</artifactId>
-  <version>1.2.0</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 

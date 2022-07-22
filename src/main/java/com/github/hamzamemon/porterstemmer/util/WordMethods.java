@@ -9,10 +9,10 @@ import java.util.Map;
  * Methods to handle the Porter Stemmer algorithm
  */
 public final class WordMethods {
-
+    
     private static Map<String, StringBuilder> mapCapitalYs = new HashMap<>();
     private static Map<String, String> stringToLetterTypes = new HashMap<>();
-
+    
     /**
      * Determines if a letter is a vowel or not
      *
@@ -22,7 +22,7 @@ public final class WordMethods {
     public static char getLetterType(char letter) {
         return PorterStemmerConstants.VOWELS.indexOf(letter) >= 0 ? PorterStemmerConstants.VOWEL : PorterStemmerConstants.CONSONANT;
     }
-
+    
     /**
      * Determines is the letter is a vowel
      *
@@ -32,7 +32,7 @@ public final class WordMethods {
     private static boolean isVowel(char letter) {
         return getLetterType(letter) == PorterStemmerConstants.VOWEL;
     }
-
+    
     /**
      * Determines if the term ends in a double consonant
      *
@@ -42,7 +42,7 @@ public final class WordMethods {
     public static boolean endsWithDouble(String termS) {
         return PorterStemmerConstants.DOUBLES.matcher(termS.toLowerCase()).matches();
     }
-
+    
     /**
      * Set "y" to "Y" if preceded by a consonant that's not the first letter or if first letter is "y"
      *
@@ -54,7 +54,7 @@ public final class WordMethods {
             term = mapCapitalYs.get(termS);
             return;
         }
-
+        
         if (termS.contains("y")) {
             if (term.charAt(0) == 'y') {
                 term = term.replace(0, 1, "Y");
@@ -67,10 +67,10 @@ public final class WordMethods {
                 }
             }
         }
-
+        
         mapCapitalYs.put(termS, term);
     }
-
+    
     /**
      * Determines if a word is "short" - ends with short syllable and R1 is null
      *
@@ -80,7 +80,7 @@ public final class WordMethods {
     public static boolean isShort(String termS) {
         return endsWithShortSyllable(termS) && getMeasure(termS) == 1;
     }
-
+    
     /**
      * Determines if word is a short syllable:
      * Vowel followed by consonant (not "w", "x" or "Y" and preceded by consonant
@@ -95,12 +95,12 @@ public final class WordMethods {
             // V, C
             return false;
         }
-
+        
         if (termS.length() == 2) {
             // VC
             return PorterStemmerConstants.VOWELS.indexOf(termS.charAt(0)) >= 0 && PorterStemmerConstants.VOWELS.indexOf(termS.charAt(1)) < 0;
         }
-
+        
         char last = termS.charAt(termS.length() - 1);
         if (last == 'w' || last == 'x' || last == 'Y') {
             // **w, **x, **Y
@@ -108,11 +108,11 @@ public final class WordMethods {
         }
         char secondLast = termS.charAt(termS.length() - 2);
         char thirdLast = termS.charAt(termS.length() - 3);
-
+        
         // *CVC
         return !isVowel(thirdLast) && isVowel(secondLast) && !isVowel(last);
     }
-
+    
     /**
      * Convert word to Vs and Cs (vowel and consonant)
      *
@@ -123,7 +123,7 @@ public final class WordMethods {
         if (stringToLetterTypes.containsKey(word)) {
             return stringToLetterTypes.get(word);
         }
-
+        
         StringBuilder letterTypes = new StringBuilder(word.length());
         for (int i = 0, length = word.length(); i < length; i++) {
             char letter = word.charAt(i);
@@ -132,12 +132,12 @@ public final class WordMethods {
                 letterTypes.append(letterType);
             }
         }
-
+        
         String letterTypesS = letterTypes.toString();
         stringToLetterTypes.put(word, letterTypesS);
         return letterTypesS;
     }
-
+    
     /**
      * Number of CV pairs
      *
@@ -154,7 +154,7 @@ public final class WordMethods {
         }
         return letterTypes.length() >> 1;
     }
-
+    
     /**
      * Constructor for WordMethods
      */

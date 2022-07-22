@@ -15,13 +15,13 @@ import java.util.regex.Pattern;
  * This class does the Porter Stemmer algorithm (http://snowball.tartarus.org/algorithms/english/stemmer.html)
  */
 public final class PorterStemmer {
-
+    
     private static final Step2Suffixes[] STEP_2_SUFFIXES = Step2Suffixes.values();
     private static final Step3Suffixes[] STEP_3_SUFFIXES = Step3Suffixes.values();
     private static final Step4Suffixes[] STEP_4_SUFFIXES = Step4Suffixes.values();
     private static final Pattern VOWEL_NOT_IMMEDIATELY_BEFORE_S = Pattern.compile("^.*[" + PorterStemmerConstants.VOWELS + "].+s$");
     private static Map<String, String> stems = new HashMap<>();
-
+    
     /**
      * R1 is the substring after the first consonant following a vowel
      *
@@ -30,17 +30,17 @@ public final class PorterStemmer {
      */
     private static int getStartIndexOfR1(StringBuilder term) {
         String termS = term.toString();
-
+        
         if (termS.startsWith("gener") || termS.startsWith("arsen")) {
             return 5;
         }
         if (termS.startsWith("commun")) {
             return 6;
         }
-
+        
         return getIndexOfVowelAfterConsonant(term, 0);
     }
-
+    
     /**
      * R2 is the substring after the first consonant following a vowel in R1
      *
@@ -50,7 +50,7 @@ public final class PorterStemmer {
     private static int getStartIndexOfR2(StringBuilder term, int r1) {
         return getIndexOfVowelAfterConsonant(term, r1);
     }
-
+    
     /**
      * Gets index of vowel after consonant
      *
@@ -68,10 +68,10 @@ public final class PorterStemmer {
         while (i < length && PorterStemmerConstants.VOWELS.indexOf(termS.charAt(i)) >= 0) {
             i++;
         }
-
+        
         return i;
     }
-
+    
     /**
      * Performs the algorithm steps
      *
@@ -85,7 +85,7 @@ public final class PorterStemmer {
         if (PorterStemmerConstants.EXCEPTIONAL_FORMS.containsKey(termS)) {
             return PorterStemmerConstants.EXCEPTIONAL_FORMS.get(termS);
         }
-
+        
         StringBuilder term = new StringBuilder(termS);
         WordMethods.setCapitalYs(term);
         int r1 = getStartIndexOfR1(term);
@@ -94,24 +94,24 @@ public final class PorterStemmer {
         if (term.toString().isEmpty()) {
             return "";
         }
-
+        
         doStep1a(term);
-
+        
         String termToString = term.toString();
-
+        
         if (PorterStemmerConstants.EXCEPTIONAL_FORMS_AFTER_STEP_1A.contains(termToString)) {
             return termToString;
         }
-
+        
         doStep1bc(term, r1);
         doStep1c(term);
         doStep2To4(term, r1, r2);
         doStep5(term, r1, r2);
-
+        
         termToString = term.toString();
         return termToString.replace("Y", "y");
     }
-
+    
     /**
      * Does the stemming helper method, determines if the word has been stemmed before
      *
@@ -122,19 +122,19 @@ public final class PorterStemmer {
         if (termS.length() <= 2) {
             return termS;
         }
-
+        
         String stem;
-
+        
         if (stems.containsKey(termS)) {
             stem = stems.get(termS);
         } else {
             stem = makeStem(termS);
             stems.put(termS, stem);
         }
-
+        
         return stem;
     }
-
+    
     /**
      * Handles suffixes of "'", "'s" and "'s'"
      *
@@ -142,7 +142,7 @@ public final class PorterStemmer {
      */
     private static void doStep0(StringBuilder term) {
         String termS = term.toString();
-
+        
         if (termS.endsWith("'s'")) {
             // *'s' -> *
             term.delete(term.length() - 3, term.length());
@@ -154,7 +154,7 @@ public final class PorterStemmer {
             term.deleteCharAt(term.length() - 1);
         }
     }
-
+    
     /**
      * Handles "s" suffixes
      *
@@ -162,7 +162,7 @@ public final class PorterStemmer {
      */
     private static void doStep1a(StringBuilder term) {
         String termS = term.toString();
-
+        
         if (termS.endsWith("sses")) {
             // *sses -> *ss
             term.delete(term.length() - 2, term.length());
@@ -184,7 +184,7 @@ public final class PorterStemmer {
             }
         }
     }
-
+    
     /**
      * Handles suffixes of "ed" and "ing"
      *
@@ -194,7 +194,7 @@ public final class PorterStemmer {
     private static void doStep1bc(StringBuilder term, int r1) {
         String termS = term.toString();
         int length = term.length();
-
+        
         if (termS.endsWith("eedly")) {
             if (term.length() - 5 >= r1) {
                 // *eedly -> *e
@@ -217,14 +217,14 @@ public final class PorterStemmer {
                 }
             }
         }
-
+        
         if (term.charAt(term.length() - 1) == 'y' || term.charAt(term.length() - 1) == 'Y') {
             if (term.length() >= 3 && PorterStemmerConstants.VOWELS.indexOf(term.charAt(term.length() - 2)) < 0) {
                 term.replace(term.length() - 1, term.length(), "i");
             }
         }
     }
-
+    
     /**
      * Handles second part of Step 1b
      *
@@ -232,7 +232,7 @@ public final class PorterStemmer {
      */
     private static void step1BPart2(StringBuilder term) {
         String termS = term.toString();
-
+        
         if (termS.endsWith("at") || termS.endsWith("bl") || termS.endsWith("iz")) {
             // *at -> *ate, *bl -> *ble, *iz -> *ize
             term.append('e');
@@ -244,7 +244,7 @@ public final class PorterStemmer {
             term.append('e');
         }
     }
-
+    
     /**
      * Replaces "y" with "i" if necessary
      *
@@ -257,7 +257,7 @@ public final class PorterStemmer {
             }
         }
     }
-
+    
     /**
      * Replaces suffixes with stemmed suffix using enums
      *
@@ -286,11 +286,11 @@ public final class PorterStemmer {
                         removeSuffix(term, suffix, step2Suffix.getSuffix());
                     }
                 }
-
+                
                 break;
             }
         }
-
+        
         // Step 3
         termS = term.toString();
         if (termS.endsWith("ative")) {
@@ -308,10 +308,10 @@ public final class PorterStemmer {
                 }
             }
         }
-
+        
         // Step 4
         termS = term.toString();
-
+        
         if (termS.endsWith("sion") || termS.endsWith("tion")) {
             if (termS.length() - 3 >= r2) {
                 term.delete(term.length() - 3, term.length());
@@ -331,7 +331,7 @@ public final class PorterStemmer {
             }
         }
     }
-
+    
     /**
      * Remove suffix for Steps 2-4
      *
@@ -346,7 +346,7 @@ public final class PorterStemmer {
             term.replace(lastIndex, term.length(), replacement);
         }
     }
-
+    
     /**
      * Remove ending "e" and "l" if necessary
      *
@@ -356,7 +356,7 @@ public final class PorterStemmer {
      */
     private static void doStep5(StringBuilder term, int r1, int r2) {
         String termS = term.toString();
-
+        
         if (termS.charAt(termS.length() - 1) == 'e') {
             if (termS.length() - 1 >= r2) {
                 term.deleteCharAt(term.length() - 1);
@@ -370,7 +370,7 @@ public final class PorterStemmer {
             term.deleteCharAt(term.length() - 1);
         }
     }
-
+    
     /**
      * Constructor for PorterStemmer
      */
