@@ -5,7 +5,7 @@
 
     <groupId>io.github.hamzamemon</groupId>
     <artifactId>porterstemmer</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.4</version>
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -117,13 +117,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <!-- Prevent gpg from using pinentry programs -->
-                            <gpgArguments>
-                                <arg>--pinentry-mode</arg>
-                                <arg>loopback</arg>
-                            </gpgArguments>
-                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
